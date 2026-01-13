@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmotiSense - AI Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <div class="logo-icon">😊</div>
+                <span class="logo-text">Face Emotion Detection</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="{{ url_for('index') }}" class="btn-signup start-detection">Start Detection</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                AI-Powered Emotion Recognition
+            </div>
+            <h1 class="hero-title">
+                Understand Emotions in
+                <span class="gradient-text">Real-Time</span>
+            </h1>
+            <p class="hero-description">
+                Advanced facial emotion detection powered by deep learning. 
+                Detect 7 different emotions with high accuracy in real-time.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('index') }}" class="btn-primary start-detection">
+                    Start Detection
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
+                <a href="#features" class="btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">99.2%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Emotions</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">Real-time</div>
+                    <div class="stat-label">Detection</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="emotion-card">
+                <div class="emotion-icon">😊</div>
+                <div class="emotion-label">Happy</div>
+                <div class="emotion-bar">
+                    <div class="bar-fill" style="width: 92%"></div>
+                </div>
+            </div>
+            <div class="emotion-card">
+                <div class="emotion-icon">😢</div>
+                <div class="emotion-label">Sad</div>
+                <div class="emotion-bar">
+                    <div class="bar-fill" style="width: 15%"></div>
+                </div>
+            </div>
+            <div class="emotion-card">
+                <div class="emotion-icon">😮</div>
+                <div class="emotion-label">Surprised</div>
+                <div class="emotion-bar">
+                    <div class="bar-fill" style="width: 45%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- hidden keepalive image to keep server camera active when UI is paused -->
+    <img id="keepalive-feed" class="hidden" alt="keepalive" />
+
+    <!-- INLINE DETECTION PANEL (hidden by default) -->
+    <section id="detection-panel" class="detection-panel hidden">
+        <div class="detection-container">
+            <div class="drag-bar">
+                <span class="drag-icon" aria-hidden="true">☰</span>
+                <h2 class="drag-handle">Live Detection</h2>
+            </div>
+            <div class="video-card">
+                <div class="video-frame">
+                    <img id="home-video-feed" src="" alt="Live feed"/>
+                    <div id="home-paused-overlay" class="paused-overlay hidden"></div>
+                </div>
+                <div class="controls">
+                    <button id="home-start-btn" class="btn primary">Start</button>
+                    <button id="home-stop-btn" class="btn ghost">Stop</button>
+                    <button id="home-capture-btn" class="btn">Capture</button>
+                    <button id="home-move-btn" class="btn ghost">Move</button>
+                    <button id="home-close-btn" class="btn ghost">Close</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Powerful Features</h2>
+            <p>Everything you need for emotion detection</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>High Accuracy</h3>
+                <p>State-of-the-art deep learning model trained on thousands of facial expressions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time Processing</h3>
+                <p>Instant emotion detection with minimal latency for smooth user experience</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>7 Emotions</h3>
+                <p>Detect Happy, Sad, Angry, Surprised, Fear, Disgust, and Neutral emotions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>Capture & Save</h3>
+                <p>Save interesting moments with emotion data for later analysis</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy First</h3>
+                <p>All processing happens locally. Your data never leaves your device</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>Easy Integration</h3>
+                <p>Simple API and web interface for seamless integration into your workflow</p>
+            </div>
+        </div>
+    </section>
+
+  <!-- ABOUT -->
+<section id="about" class="about">
+
+    <!-- INTRODUCTION BLOCK -->
+    <div class="about-content">
+        <div class="about-text full-width">
+            <h2>About Face Emotion Detection</h2>
+
+            <p>
+                Face Emotion Detection is an intelligent computer vision system that detects human emotions
+                by analyzing facial expressions in real time using a webcam or image input.
+            </p>
+
+            <p>
+                The system works in two main stages. First, it detects the human face from the live video stream.
+                Second, it recognizes the emotional state of the detected face using a deep learning model.
+            </p>
+
+            <p>
+                This project uses two pre-trained models to achieve accurate and efficient emotion detection,
+                making it suitable for real-time applications such as human–computer interaction,
+                emotion analysis, and educational research.
+            </p>
+
+            <a href="{{ url_for('index') }}" class="btn-primary start-detection">
+                Start Detection
+            </a>
+        </div>
+    </div>
+    <br>
+    <!-- TOOLS & TECHNOLOGIES BLOCK (BELOW) -->
+    <div class="about-tools">
+        <h3 class="tech-title">Tools & Technologies Used</h3>
+
+        <div class="tech-stack">
+
+            <div class="tech-item model-highlight">
+    <strong>Pre-trained Haar Cascade Model</strong><br>
+    <code>haarcascade_frontalface_default.xml</code><br>
+    Used to detect human faces quickly and reliably from images and live webcam feed.
+</div>
+
+<div class="tech-item model-highlight">
+    <strong>Pre-trained CNN Emotion Model</strong><br>
+    <code>emotion_model.h5</code><br>
+    Used to recognize and classify facial emotions such as Happy, Sad, Angry,
+    Fear, Surprise, Disgust, and Neutral.
+</div>
+
+
+            
+            <div class="tech-item model-highlight">
+                <strong>OpenCV</strong><br>
+                Used to capture video frames, process images, and integrate face detection
+                with emotion recognition.
+            </div>
+
+            <div class="tech-item model-highlight">
+                <strong>TensorFlow & Keras</strong><br>
+                Used to load and execute the convolutional neural network model efficiently.
+            </div>
+
+            <div class="tech-item model-highlight">
+                <strong>Flask</strong><br>
+                Used to build the web application and connect frontend with backend logic.
+            </div>
+
+            <div class="tech-item model-highlight">
+                <strong>NumPy</strong><br>
+                Used for numerical operations and image data handling.
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo-section">
+                    <div class="logo-icon">😊</div>
+                    <span class="logo-text">EmotiSense</span>
+                </div>
+                <p>AI-powered emotion detection for everyone</p>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="#">Documentation</a>
+                <a href="#">API</a>
+                <a href="#">Support</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; This Project Built By Nikhita A Shivayogi</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const startLinks = document.querySelectorAll('.start-detection');
+        const panel = document.getElementById('detection-panel');
+        const video = document.getElementById('home-video-feed');
+        const pausedOverlay = document.getElementById('home-paused-overlay');
+        const startBtn = document.getElementById('home-start-btn');
+        const stopBtn = document.getElementById('home-stop-btn');
+        const captureBtn = document.getElementById('home-capture-btn');
+        const moveBtn = document.getElementById('home-move-btn');
+        const closeBtn = document.getElementById('home-close-btn');
+
+        let streamActive = false;
+        let moveMode = false; // when true, clicking anywhere on the card starts dragging
+
+        startLinks.forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Open dashboard in a new tab/window when user starts detection from home
+                try {
+                    window.open("{{ url_for('dashboard') }}", '_blank');
+                } catch (err) {
+                    console.warn('Could not open dashboard in new tab:', err);
+                }
+                panel.classList.remove('hidden');
+                panel.classList.add('open');
+                panel.classList.remove('closing');
+                // small entrance animation and focus
+                setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'center' }), 40);
+            });
+        });
+
+        startBtn.addEventListener('click', () => {
+            // Start the live MJPEG feed and enter playing state
+            video.src = "{{ url_for('video_feed') }}";
+            const keep = document.getElementById('keepalive-feed');
+            if (keep) keep.src = "{{ url_for('video_feed') }}";
+            pausedOverlay.classList.add('hidden');
+            video.classList.remove('paused');
+            video.classList.add('playing');
+            panel.classList.add('open');
+            document.body.classList.add('streaming');
+            streamActive = true;
+            // button animation
+            startBtn.classList.add('active');
+            setTimeout(() => startBtn.classList.remove('active'), 300);
+        });
+
+        stopBtn.addEventListener('click', async () => {
+            // Stop should release the camera on the server and update UI
+            try {
+                const res = await fetch('{{ url_for("stop_camera") }}', { method: 'POST' });
+                if (res.ok) {
+                    // clear both visible and hidden keepalive sources so server stops
+                    video.src = "";
+                    const keep = document.getElementById('keepalive-feed');
+                    if (keep) keep.src = '';
+                    video.classList.remove('playing');
+                    video.classList.add('paused');
+                    pausedOverlay.classList.remove('hidden');
+                    document.body.classList.remove('streaming');
+                    streamActive = false;
+                } else {
+                    console.warn('stop_camera failed');
+                }
+            } catch (e) {
+                console.error('stop request failed', e);
+            }
+            // button animation
+            stopBtn.classList.add('active');
+            setTimeout(() => stopBtn.classList.remove('active'), 300);
+        });
+
+        captureBtn.addEventListener('click', async () => {
+            if (!streamActive) {
+                alert('Stream is not active. Start the camera first.');
+                return;
+            }
+
+            const img = document.getElementById('home-video-feed');
+            const w = img.naturalWidth || img.width || 640;
+            const h = img.naturalHeight || img.height || 480;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            try {
+                ctx.drawImage(img, 0, 0, w, h);
+            } catch (err) {
+                alert('Unable to capture frame. Try again.');
+                return;
+            }
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+            try {
+                const res = await fetch('{{ url_for("capture") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: dataUrl })
+                });
+                const js = await res.json();
+                if (res.ok) {
+                    alert('Saved snapshot: ' + js.filename);
+                } else {
+                    alert('Save failed: ' + (js.error || res.statusText));
+                }
+            } catch (e) {
+                alert('Network error when saving snapshot.');
+            }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            // fully stop the stream, reset UI and hide panel
+            video.src = "";
+            const keep = document.getElementById('keepalive-feed');
+            if (keep) keep.src = '';
+            video.classList.remove('playing', 'paused');
+            pausedOverlay.classList.add('hidden');
+            document.body.classList.remove('streaming');
+            streamActive = false;
+            panel.classList.remove('open');
+            // animate closing then hide
+            panel.classList.add('closing');
+            setTimeout(() => {
+                panel.classList.remove('closing');
+                panel.classList.add('hidden');
+            }, 220);
+        });
+
+        // Move toggle behavior
+        if (moveBtn) {
+            moveBtn.addEventListener('click', () => {
+                moveMode = !moveMode;
+                moveBtn.classList.toggle('active', moveMode);
+                panel.classList.toggle('movable', moveMode);
+                // visual hint: when move mode on, hide pointer events for controls to avoid accidental clicks
+                // but keep the Move button clickable so user can toggle it off
+                const controls = panel.querySelectorAll('.controls > *');
+                controls.forEach(el => {
+                    if (el === moveBtn) return;
+                    el.style.pointerEvents = moveMode ? 'none' : '';
+                });
+            });
+        }
+    });
+
+    // Drag support for detection panel
+    (function(){
+        const handle = panel.querySelector('.drag-bar') || panel.querySelector('.drag-handle');
+        let isDragging = false;
+        let dragOffsetX = 0, dragOffsetY = 0;
+
+        function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+        function startDrag(clientX, clientY){
+            const rect = panel.getBoundingClientRect();
+            panel.style.right = '';
+            panel.style.bottom = '';
+            panel.style.left = rect.left + 'px';
+            panel.style.top = rect.top + 'px';
+            isDragging = true;
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+            panel.classList.add('dragging');
+            document.body.style.userSelect = 'none';
+        }
+
+        function onDrag(clientX, clientY){
+            if(!isDragging) return;
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            const x = clamp(clientX - dragOffsetX, 8, vw - panel.offsetWidth - 8);
+            const y = clamp(clientY - dragOffsetY, 8, vh - panel.offsetHeight - 8);
+            panel.style.left = x + 'px';
+            panel.style.top = y + 'px';
+        }
+
+        function endDrag(){
+            if(!isDragging) return;
+            isDragging = false;
+            panel.classList.remove('dragging');
+            document.body.style.userSelect = '';
+        }
+
+        if(handle){
+            handle.addEventListener('mousedown', (ev) => {
+                ev.preventDefault();
+                startDrag(ev.clientX, ev.clientY);
+            });
+            window.addEventListener('mousemove', (ev) => onDrag(ev.clientX, ev.clientY));
+            window.addEventListener('mouseup', () => endDrag());
+
+            // touch support on handle
+            handle.addEventListener('touchstart', (ev) => {
+                const t = ev.touches[0];
+                startDrag(t.clientX, t.clientY);
+            }, {passive: true});
+            window.addEventListener('touchmove', (ev) => {
+                const t = ev.touches[0];
+                onDrag(t.clientX, t.clientY);
+            }, {passive: true});
+            window.addEventListener('touchend', () => endDrag());
+        }
+
+        // allow dragging by panel body. When moveMode is true, start drag from anywhere;
+        // when moveMode is false, avoid starting drag from interactive controls.
+        panel.addEventListener('mousedown', (ev) => {
+            const interactive = ev.target.closest('.controls, button, a, .btn');
+            if (!moveMode && interactive) return;
+            ev.preventDefault();
+            startDrag(ev.clientX, ev.clientY);
+        });
+        panel.addEventListener('touchstart', (ev) => {
+            const t = ev.touches[0];
+            const interactive = ev.target.closest('.controls, button, a, .btn');
+            if (!moveMode && interactive) return;
+            startDrag(t.clientX, t.clientY);
+        }, {passive: true});
+    })();
+    </script>
+</body>
+</html>

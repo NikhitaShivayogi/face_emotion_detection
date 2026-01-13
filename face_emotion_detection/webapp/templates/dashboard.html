@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Face Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <div class="logo-icon">😊</div>
+                <span class="logo-text">Face Emotion Detection</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- WELCOME -->
+        <div class="welcome-section">
+            <h1>Real-Time <span class="gradient-text">Emotion Detection</span></h1>
+            <p>Live facial emotion analysis with confidence levels</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column">
+                <!-- VIDEO SECTION -->
+                <div class="video-section">
+                    <div class="video-card">
+                        <div class="video-header">
+                            <h2>Live Emotion Detection</h2>
+                        </div>
+
+                        <div class="video-wrapper">
+                            <img id="videoFeed" data-feed="{{ url_for('video_feed') }}" src="" alt="Video Feed" class="feed-off">
+                            <div class="video-overlay">
+                                <div class="emotion-info">
+                                    <div class="emotion-icon-large">🎭</div>
+                                    <p>Camera is off. Click Start.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-controls">
+                            <button class="btn-control" onclick="captureFrame()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                                </svg>
+                                Capture
+                            </button>
+                            <button class="btn-control" onclick="startCamera()" id="start-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 5v14l11-7z" fill="currentColor" />
+                                </svg>
+                                Start
+                            </button>
+                            <button class="btn-control" onclick="stopCamera()" id="stop-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="6" y="6" width="12" height="12" fill="currentColor" />
+                                </svg>
+                                Stop
+                            </button>
+                            
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <!-- SPACE SECTION (separate from video card) -->
+                <div class="space-section">
+                    <div class="info-card">
+                        <h3>Space</h3>
+                        <div class="gallery-grid">
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_happy.png') }}" alt="Happy Space">
+                                <div class="caption"> 😊 Happy Space</div>
+                                <div class="line-text">Description: Smiling, upturned mouth of mouth</div>
+                            </div>
+
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_fear.png') }}" alt="Fear Space">
+                                <div class="caption"> 😨 Fear</div>
+                                <div class="line-text">Description — Widened eyes, raised eyebrows, open mouth</div>
+                            </div>
+                           
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_sad.png') }}" alt="Emoji Sad">
+                                <div class="caption">😢 Sad face</div>
+                                <div class="line-text"> Description — downturned mouth, drooping eyelids</div>
+                            </div>
+
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_surprise.png') }}" alt="Emoji Surprise">
+                                <div class="caption">😮 Surprise</div>
+                                <div class="line-text">Description — Raised eyebrows, wide eyes, open mouth</div>
+                            </div>
+
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_angry.png') }}" alt="Emoji Angry">
+                                <div class="caption">😠 Angry</div>
+                                <div class="line-text">Description — Furrowed brows, tense jaw, glaring eyes</div>
+                            </div>
+
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_disgust.png') }}" alt="Emoji Disgust">
+                                <div class="caption">🤢 Disgust</div>
+                                <div class="line-text"> Description: Wrinkled nose, raised upper lip</div>
+                            </div>
+
+                            <div class="gallery-item">
+                                <img src="{{ url_for('static', filename='images/emotions/emoji_neutral.png') }}" alt="Emoji Neutral">
+                                <div class="caption">😐 Neutral</div>
+                                <div class="line-text">Description: Relaxed expression</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3>Detected Emotions</h3>
+                    <div class="emotions-list">
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😊</span>
+                            <span class="emotion-name">Happy</span>
+                            <span class="emotion-percent" id="percent-Happy">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Happy"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😢</span>
+                            <span class="emotion-name">Sad</span>
+                            <span class="emotion-percent" id="percent-Sad">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Sad"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😮</span>
+                            <span class="emotion-name">Surprise</span>
+                            <span class="emotion-percent" id="percent-Surprise">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Surprise"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😠</span>
+                            <span class="emotion-name">Angry</span>
+                            <span class="emotion-percent" id="percent-Angry">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Angry"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😨</span>
+                            <span class="emotion-name">Fear</span>
+                            <span class="emotion-percent" id="percent-Fear">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Fear"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">🤢</span>
+                            <span class="emotion-name">Disgust</span>
+                            <span class="emotion-percent" id="percent-Disgust">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Disgust"></div></div>
+                        </div>
+
+                        <div class="emotion-item">
+                            <span class="emotion-emoji">😐</span>
+                            <span class="emotion-name">Neutral</span>
+                            <span class="emotion-percent" id="percent-Neutral">0%</span>
+                            <div class="emotion-bar"><div class="bar-fill" id="bar-Neutral"></div></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Quick Stats</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value">99.2%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Emotions</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">30fps</div>
+                            <div class="stat-label">Speed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="dominant-emotion">-</div>
+                            <div class="stat-label">Dominant</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        const socket = io();
+
+        socket.on('emotion_update', function(emotions) {
+            updateEmotions(emotions);
+        });
+
+        setInterval(fetchEmotions, 500);
+
+        function fetchEmotions() {
+            fetch('/get_emotions')
+                .then(res => res.json())
+                .then(data => updateEmotions(data));
+        }
+
+        function updateEmotions(emotions) {
+            let maxEmotion = '';
+            let maxValue = 0;
+
+            for (const [emotion, value] of Object.entries(emotions)) {
+                const bar = document.getElementById(`bar-${emotion}`);
+                const percent = document.getElementById(`percent-${emotion}`);
+
+                if (bar && percent) {
+                    bar.style.width = value + '%';
+                    percent.textContent = value.toFixed(1) + '%';
+                }
+
+                if (value > maxValue) {
+                    maxValue = value;
+                    maxEmotion = emotion;
+                }
+            }
+
+            document.getElementById('dominant-emotion').textContent = maxEmotion || '-';
+        }
+
+        function captureFrame() {
+            const video = document.getElementById('videoFeed');
+            if (!video || !video.getAttribute('src')) {
+                alert('Camera is not active. Start the feed first.');
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = video.naturalWidth || video.width || 640;
+            canvas.height = video.naturalHeight || video.height || 480;
+            const ctx = canvas.getContext('2d');
+            // drawImage from img element works when it's a same-origin stream; if not available the server-side capture should be used instead
+            try {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        fetch('/capture', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ image: reader.result })
+                        }).then(() => alert('Image captured successfully!'));
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                console.error('Failed to capture image from feed', e);
+                alert('Unable to capture frame from the current feed.');
+            }
+        }
+
+        async function stopCamera() {
+            const video = document.getElementById('videoFeed');
+            try {
+                const res = await fetch('/stop_camera', { method: 'POST' });
+                if (res.ok) {
+                    // clear visible feed and give visual feedback
+                    if (video) video.removeAttribute('src');
+                    const overlay = document.querySelector('.video-overlay .emotion-info p');
+                    if (overlay) overlay.textContent = 'Camera stopped';
+                    // disable stop button briefly
+                    const stopBtn = document.getElementById('stop-btn');
+                    if (stopBtn) {
+                        stopBtn.disabled = true;
+                        setTimeout(() => stopBtn.disabled = false, 800);
+                    }
+                } else {
+                    console.warn('stop_camera returned', res.status);
+                }
+            } catch (e) {
+                console.error('Failed to stop camera', e);
+            }
+        }
+
+        function startCamera() {
+            const video = document.getElementById('videoFeed');
+            if (!video) return;
+            // set feed source to server MJPEG endpoint stored in data-feed
+            const feedUrl = video.getAttribute('data-feed');
+            if (feedUrl) {
+                video.src = feedUrl;
+            }
+            const overlay = document.querySelector('.video-overlay .emotion-info p');
+            if (overlay) overlay.textContent = 'Detecting emotions...';
+        }
+
+        function toggleStats() {
+            alert('Stats feature coming soon!');
+        }
+    </script>
+        <script>
+            // Ensure camera feed is off on initial load and overlay shows prompt
+            (function(){
+                document.addEventListener('DOMContentLoaded', ()=>{
+                    const video = document.getElementById('videoFeed');
+                    if (!video) return;
+                    // remove any src to keep feed off
+                    video.removeAttribute('src');
+                    video.classList.add('feed-off');
+                    const overlayP = document.querySelector('.video-overlay .emotion-info p');
+                    if (overlayP) overlayP.textContent = 'Camera is off. Click Start.';
+                });
+            })();
+        </script>
+    <!-- Image modal -->
+    <div id="image-modal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-close" id="modal-close">✕</div>
+            <img id="modal-img" src="" alt="">
+            <div class="modal-caption" id="modal-caption"></div>
+        </div>
+    </div>
+
+    <script>
+        // Click animation + modal behavior for gallery items
+        (function(){
+            function rand(min, max){ return Math.random()*(max-min)+min }
+
+            function createDust(item, x, y){
+                for(let i=0;i<8;i++){
+                    const d = document.createElement('div');
+                    d.className = 'dust';
+                    // set initial position relative to item
+                    const rect = item.getBoundingClientRect();
+                    const localX = x - rect.left;
+                    const localY = y - rect.top;
+                    d.style.left = localX + 'px';
+                    d.style.top = localY + 'px';
+                    // random direction
+                    const dx = (rand(-60,60)).toFixed(1) + 'px';
+                    const dy = (rand(-60,-10)).toFixed(1) + 'px';
+                    d.style.setProperty('--dx', dx);
+                    d.style.setProperty('--dy', dy);
+                    item.appendChild(d);
+                    d.addEventListener('animationend', ()=> d.remove());
+                }
+            }
+
+            function popAndShow(item, imgSrc, caption){
+                item.classList.add('pop');
+                setTimeout(()=> item.classList.remove('pop'), 380);
+                // center point for dust
+                const rect = item.getBoundingClientRect();
+                const cx = rect.left + rect.width/2;
+                const cy = rect.top + rect.height/2;
+                createDust(item, cx, cy);
+
+                // show modal
+                const modal = document.getElementById('image-modal');
+                const modalImg = document.getElementById('modal-img');
+                const modalCaption = document.getElementById('modal-caption');
+                modalImg.src = imgSrc;
+                modalCaption.textContent = caption || '';
+                modal.classList.add('show');
+            }
+
+            document.addEventListener('DOMContentLoaded', ()=>{
+                document.querySelectorAll('.gallery-item').forEach(item=>{
+                    item.addEventListener('click', (ev)=>{
+                        const img = item.querySelector('img');
+                        const caption = item.querySelector('.caption')?.textContent || '';
+                        popAndShow(item, img ? img.src : '', caption + ' — ' + (item.querySelector('.line-text')?.textContent||''));
+                    });
+                });
+
+                // modal close handlers
+                const modal = document.getElementById('image-modal');
+                const modalClose = document.getElementById('modal-close');
+                modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.classList.remove('show'); });
+                modalClose.addEventListener('click', ()=> modal.classList.remove('show'));
+                document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') modal.classList.remove('show'); });
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+ `flask`
+- `flask-socketio`
+- `tensorflow` (or `tensorflow-cpu` depending on your environment)
+- `opencv-python`
+- `numpy`
